@@ -1,3 +1,3 @@
-var mongoose = require('helpers/Mongoose');
+const mongoose = require('../helpers/Mongoose');
 
 module.exports = mongoose.Types.ObjectId;

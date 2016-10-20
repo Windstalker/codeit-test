@@ -1,14 +1,13 @@
-'use strict';
 const router = require('express').Router();
 
-const HttpError = require("helpers/HttpError");
-const Session = require("helpers/Session");
+const HttpError = require('../helpers/HttpError');
+const Session = require('../helpers/Session');
 
 router.use((req, res, next) => {
-    res.header('Content-Type', 'application/json');
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Token");
-    next();
+  res.header('Content-Type', 'application/json');
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Token');
+  next();
 });
 
 /**
@@ -24,30 +23,30 @@ router.use(Session.middleware);
 /**
  * Define standart response HTTP status code
  */
-router.options('/*',function(req, res, next) {
-    res.statusCode = 200;
-    res.header("Access-Control-Allow-Methods", "GET, PUT, PATCH, POST, DELETE, OPTIONS");
-    res.send();
+router.options('/*', (req, res, next) => {
+  res.statusCode = 200;
+  res.header('Access-Control-Allow-Methods', 'GET, PUT, PATCH, POST, DELETE, OPTIONS');
+  res.send();
 });
-router.get('/*',function(req, res, next) {
-    res.statusCode = 200;
-    next();
+router.get('/*', (req, res, next) => {
+  res.statusCode = 200;
+  next();
 });
-router.post('/*',function(req, res, next) {
-    res.statusCode = 201;
-    next();
+router.post('/*', (req, res, next) => {
+  res.statusCode = 201;
+  next();
 });
-router.put('/*',function(req, res, next) {
-    res.statusCode = 202;
-    next();
+router.put('/*', (req, res, next) => {
+  res.statusCode = 202;
+  next();
 });
-router.patch('/*',function(req, res, next) {
-    res.statusCode = 202;
-    next();
+router.patch('/*', (req, res, next) => {
+  res.statusCode = 202;
+  next();
 });
-router.delete('/*',function(req, res, next) {
-    res.statusCode = 200;
-    next();
+router.delete('/*', (req, res, next) => {
+  res.statusCode = 200;
+  next();
 });
 
 const auth = require('./auth');
@@ -58,18 +57,18 @@ router.use('/auth', auth);
 router.use('/blog', blog);
 
 /* API error hendler */
-router.use(function(err, req, res, next) {
-    if (!err) err = new HttpError(404);
+router.use((err, req, res, next) => {
+  if (!err) err = new HttpError(404);
 
-    if(typeof err == "number") {
-        err = new HttpError(err);
-    }
+  if (typeof err == 'number') {
+    err = new HttpError(err);
+  }
 
-    if(err instanceof HttpError) {
-        res.sendHttpError(err);
-    } else {
-        next(err);
-    }
+  if (err instanceof HttpError) {
+    res.sendHttpError(err);
+  } else {
+    next(err);
+  }
 });
 
 module.exports = router;

@@ -1,12 +1,13 @@
-'use strict';
+
+
 const router = require('express').Router();
 
-const HttpError = require("helpers/HttpError");
-const ACL = require('helpers/ACL');
-const Blogs = require("models/Blogs");
-const ObjectId = require("helpers/ObjectId");
+const HttpError = require('../helpers/HttpError');
+const ACL = require('../helpers/ACL');
+const Blogs = require('../models/Blogs');
+const ObjectId = require('../helpers/ObjectId');
 const form = require('express-form2');
-  var field   = form.field;
+const field = form.field;
 
 /**
  * Get list of posts
@@ -16,16 +17,16 @@ router.get(
 
     // Controller
     (req, res, next) => {
-        Blogs
+      Blogs
             .find()
             .then((blogs) => {
-                if (blogs.length == 0) {
-                    res.statusCode = 204;
-                    res.send();
-                    return;
-                }
+              if (blogs.length == 0) {
+                res.statusCode = 204;
+                res.send();
+                return;
+              }
 
-                res.send(blogs.map((e) => e.public));
+              res.send(blogs.map(e => e.public));
             })
             .catch(next);
     }
@@ -53,19 +54,19 @@ router.post(
 
     // Controller
     (req, res, next) => {
-        if (!req.form.isValid) {
-            return next(new HttpError(412, "Invalid input data", req.form.errors));
-        }
+      if (!req.form.isValid) {
+        return next(new HttpError(412, 'Invalid input data', req.form.errors));
+      }
 
-        let post = new Blogs({
-            title: req.form.title,
-            text: req.form.text,
-        });
+      const post = new Blogs({
+        title: req.form.title,
+        text: req.form.text,
+      });
 
-        post
+      post
             .save()
             .then((post) => {
-                res.send(post.public);
+              res.send(post.public);
             })
             .catch(next);
     }
@@ -79,7 +80,7 @@ router.get(
 
     // Controller
     (req, res, next) => {
-        res.send(req.data.post.public);
+      res.send(req.data.post.public);
     }
 );
 
@@ -93,12 +94,12 @@ router.delete(
 
     // Controller
     (req, res, next) => {
-        let id = req.data.post._id;
+      const id = req.data.post._id;
 
-        Blogs
+      Blogs
             .findByIdAndRemove(id)
             .then(() => {
-                res.send();
+              res.send();
             })
             .catch(next);
     }
@@ -126,19 +127,19 @@ router.put(
 
     // Controller
     (req, res, next) => {
-        if (!req.form.isValid) {
-            return next(new HttpError(412, "Invalid input data", req.form.errors));
-        }
+      if (!req.form.isValid) {
+        return next(new HttpError(412, 'Invalid input data', req.form.errors));
+      }
 
-        let post = req.data.post;
+      const post = req.data.post;
 
-        post.title = req.form.title;
-        post.text = req.form.text;
+      post.title = req.form.title;
+      post.text = req.form.text;
 
-        post
+      post
             .save()
             .then((post) => {
-                res.send(post.public);
+              res.send(post.public);
             })
             .catch(next);
     }
@@ -146,20 +147,20 @@ router.put(
 
 // Params
 router.param('postId', (req, res, next, postId) => {
-    if (!ObjectId.isValid(postId)) {
-        return next(new HttpError(416, "Post id is not valid"));
-    }
+  if (!ObjectId.isValid(postId)) {
+    return next(new HttpError(416, 'Post id is not valid'));
+  }
 
-    Blogs
+  Blogs
         .findById(postId)
         .then((post) => {
-            if (!post) {
-                return next(new HttpError(404, "Post not found"));
-            }
+          if (!post) {
+            return next(new HttpError(404, 'Post not found'));
+          }
 
-            req.data = req.data || {};
-            req.data.post = post;
-            next();
+          req.data = req.data || {};
+          req.data.post = post;
+          next();
         })
         .catch(next);
 });

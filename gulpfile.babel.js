@@ -15,6 +15,7 @@ import babelify from 'babelify';
 import source from 'vinyl-source-stream';
 import streamify from 'gulp-streamify';
 import html from 'html-browserify';
+import { exec } from 'child_process';
 import pkg from './package.json';
 
 const {
@@ -29,11 +30,25 @@ const HTML_FILES = path.join(SOURCE_DIR, '**/*.html');
 const STYLES_FILES = path.join(SOURCE_DIR, STYLES_DIR, '**/*.scss');
 const SCRIPTS_FILES = path.join(SOURCE_DIR, '**/*.js');
 
-gulp.task('browser-sync', ['build'], () => {
+const cwd = process.cwd();
+
+gulp.task('backend', (cb) => {
+  exec('./bin/www', {
+    cwd,
+  }, (err, stdout, stderr) => {
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+  });
+  cb();
+});
+
+gulp.task('browser-sync', ['backend', 'build'], () => {
   browserSync({
-    server: {
-      baseDir: OUTPUT_DIR,
-    },
+    proxy: 'http://localhost:3000',
+    // port: '4000',
+    // server: {
+    //   baseDir: OUTPUT_DIR,
+    // },
   });
 });
 

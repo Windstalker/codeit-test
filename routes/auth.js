@@ -1,12 +1,12 @@
-'use strict';
 const router = require('express').Router();
 
-const HttpError = require("helpers/HttpError");
-const Session = require("helpers/Session");
-const ACL = require('helpers/ACL');
-const Users = require("models/Users");
+const HttpError = require('../helpers/HttpError');
+const Session = require('../helpers/Session');
+const ACL = require('../helpers/ACL');
+const Users = require('../models/Users');
 const form = require('express-form2');
-  var field   = form.field;
+
+const field = form.field;
 
 router.post(
     ['/signin'],
@@ -24,20 +24,20 @@ router.post(
 
     // Controller
     (req, res, next) => {
-        if (!req.form.isValid) {
-            return next(new HttpError(412, "Invalid input data", req.form.errors));
-        }
+      if (!req.form.isValid) {
+        return next(new HttpError(412, 'Invalid input data', req.form.errors));
+      }
 
-        Users
+      Users
             .auth(req.form.email, req.form.password)
             .then((user) => {
-                return Session
-                    .create(user._id)
+              return Session
+                    .create(user._id);
             })
             .then((token) => {
-                res.send({
-                    token
-                });
+              res.send({
+                token,
+              });
             })
             .catch(next);
     }
@@ -61,31 +61,31 @@ router.post(
 
     // Controller
     (req, res, next) => {
-        if (!req.form.isValid) {
-            return next(new HttpError(412, "Invalid input data", req.form.errors));
-        }
+      if (!req.form.isValid) {
+        return next(new HttpError(412, 'Invalid input data', req.form.errors));
+      }
 
-        Users
+      Users
             .findOne({
-                email: req.form.email,
+              email: req.form.email,
             })
             .then((user) => {
-                if (user) {
-                    throw new HttpError(409);
-                }
+              if (user) {
+                throw new HttpError(409);
+              }
 
-                return null;
+              return null;
             })
             .then(() => {
-                var user = new Users({
-                    email: req.form.email,
-                    password: req.form.password,
-                });
+              const user = new Users({
+                email: req.form.email,
+                password: req.form.password,
+              });
 
-                return user.save();
+              return user.save();
             })
             .then(() => {
-                res.send();
+              res.send();
             })
             .catch(next);
     }
@@ -104,20 +104,20 @@ router.get(
 
     // Controller
     (req, res, next) => {
-        if (!req.form.isValid) {
-            return next(new HttpError(412, "Invalid input data", req.form.errors));
-        }
+      if (!req.form.isValid) {
+        return next(new HttpError(412, 'Invalid input data', req.form.errors));
+      }
 
-        Users
+      Users
             .findOne({
-                email: req.form.email,
+              email: req.form.email,
             })
             .then((user) => {
-                if (user) {
-                    throw new HttpError(406, "Email already used");
-                }
+              if (user) {
+                throw new HttpError(406, 'Email already used');
+              }
 
-                res.send();
+              res.send();
             })
             .catch(next);
     }
@@ -130,11 +130,11 @@ router.post(
 
     // Controller
     (req, res, next) => {
-        Session
+      Session
             .kill(req.session)
             .then(() => {
-                res.statusCode = 202;
-                res.send();
+              res.statusCode = 202;
+              res.send();
             })
             .catch(next);
     }

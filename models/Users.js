@@ -4,38 +4,38 @@
  *
  * @module models/Users
  */
-'use strict';
 
-const config = require("config/default");
-const mongoose = require("helpers/Mongoose");
+
+const config = require('../config/default.sample');
+const mongoose = require('../helpers/Mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 // This made to void extra coding for expressions handling
-const HttpError = require("helpers/HttpError");
+const HttpError = require('../helpers/HttpError');
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 
-const modelName = "Users";
+const modelName = 'Users';
 
 /**
  * Definition of Users Schema
  */
-var usersSchema = new mongoose.Schema({
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        uniqueCaseInsensitive: true,
+const usersSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    uniqueCaseInsensitive: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  session: [
+    {
+      type: ObjectId,
     },
-    password: {
-        type: String,
-        required: true,
-    },
-    session: [
-        {
-            type: ObjectId,
-        }
-    ],
+  ],
 });
 
 usersSchema.plugin(uniqueValidator, { message: '{PATH} "{VALUE}" already in use' });
@@ -45,99 +45,99 @@ usersSchema.plugin(uniqueValidator, { message: '{PATH} "{VALUE}" already in use'
  *
  * @returns {Object}
  */
-usersSchema.virtual('public').get(function() {
-    var result = {
-        email: this.email,
-        id: this._id
-    };
+usersSchema.virtual('public').get(function () {
+  const result = {
+    email: this.email,
+    id: this._id,
+  };
 
-    return result;
+  return result;
 });
 
 
-usersSchema.statics.auth = function(email, password) {
-    return new Promise((resolve, reject) => {
-        this
+usersSchema.statics.auth = function (email, password) {
+  return new Promise((resolve, reject) => {
+    this
             .findOne({
-                email,
-                password
+              email,
+              password,
             })
             .then(
                 (user) => {
-                    if (user) {
-                        return resolve(user);
-                    }
+                  if (user) {
+                    return resolve(user);
+                  }
 
-                    reject(new HttpError(403, "Wrong email or password"));
+                  reject(new HttpError(403, 'Wrong email or password'));
                 },
                 reject
             );
-    });
+  });
 };
 
-usersSchema.methods.setSession = function() {
-    return new Promise((resolve, reject) => {
-        let token = mongoose.Types.ObjectId();
-        this.session.push(token);
+usersSchema.methods.setSession = function () {
+  return new Promise((resolve, reject) => {
+    const token = mongoose.Types.ObjectId();
+    this.session.push(token);
 
-        this
+    this
             .save()
             .then(
                 () => {
-                    resolve(token);
+                  resolve(token);
                 },
                 reject
             );
-    });
+  });
 };
 
-usersSchema.methods.getSession = function(token) {
-    return new Promise((resolve, reject) => {
-        let index = this.session.indexOf(token);
+usersSchema.methods.getSession = function (token) {
+  return new Promise((resolve, reject) => {
+    const index = this.session.indexOf(token);
 
-        if (index == -1) {
-            reject("Tokes is invalid");
-            return;
-        }
-        resolve(token);
-    });
+    if (index == -1) {
+      reject('Tokes is invalid');
+      return;
+    }
+    resolve(token);
+  });
 };
 
-usersSchema.methods.removeSession = function(token) {
-    return new Promise((resolve, reject) => {
-        let index = this.session.indexOf(token);
+usersSchema.methods.removeSession = function (token) {
+  return new Promise((resolve, reject) => {
+    const index = this.session.indexOf(token);
 
-        if (index == -1) {
-            reject("Tokes is invalid");
-        }
+    if (index == -1) {
+      reject('Tokes is invalid');
+    }
 
-        this.session.splice(index, 1);
+    this.session.splice(index, 1);
 
-        this
+    this
             .save()
             .then(
                 () => {
-                    resolve();
+                  resolve();
                 },
                 reject
             );
-        return;
-    });
+    return;
+  });
 };
 
-usersSchema.methods.cleanSession = function() {
-    return new Promise((resolve, reject) => {
-        this.session = [];
+usersSchema.methods.cleanSession = function () {
+  return new Promise((resolve, reject) => {
+    this.session = [];
 
-        this
+    this
             .save()
             .then(
                 () => {
-                    resolve();
+                  resolve();
                 },
                 reject
             );
-    });
+  });
 };
 
 /**
@@ -145,5 +145,5 @@ usersSchema.methods.cleanSession = function() {
  *
  * @type {MongooseModel}
  */
-var Users = mongoose.model(modelName, usersSchema);
+const Users = mongoose.model(modelName, usersSchema);
 module.exports = Users;
