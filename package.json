@@ -16,11 +16,9 @@
     "DEPLOY_DIR": "public",
     "ENTRY_POINT": "app.js"
   },
-  "eslintConfig": {
-    "extends": "airbnb-base"
-  },
   "dependencies": {
     "angular": "^1.5.0",
+    "angular-resource": "^1.5.8",
     "angular-ui-router": "^0.3.1",
     "babel-core": "^6.3.26",
     "babel-eslint": "^7.0.0",
@@ -75,8 +73,8 @@
   },
   "devDependencies": {
     "del": "^2.1.0",
-    "eslint": "^3.8.1",
-    "eslint-config-airbnb-base": "9.0.0",
+    "eslint": "3.8.0",
+    "eslint-config-airbnb-base": "^9.0.0",
     "eslint-plugin-import": "^2.0.1",
     "express": "^4.13.3",
     "istanbul": "^0.3.22",

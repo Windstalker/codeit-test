@@ -13,6 +13,7 @@
     "eol-last": 0,
     "no-debugger": 1,
     "no-mixed-requires": 0,
+    "no-param-reassign": 0,
     "no-underscore-dangle": 0,
     "no-multi-spaces": 0,
     "no-trailing-spaces": 0,

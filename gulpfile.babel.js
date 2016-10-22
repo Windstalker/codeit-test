@@ -11,6 +11,7 @@ import minifycss from 'gulp-minify-css';
 import sass from 'gulp-sass';
 import browserSync from 'browser-sync';
 import browserify from 'browserify';
+import ngannotate from 'browserify-ngannotate';
 import babelify from 'babelify';
 import source from 'vinyl-source-stream';
 import streamify from 'gulp-streamify';
@@ -31,6 +32,7 @@ const STYLES_FILES = path.join(SOURCE_DIR, STYLES_DIR, '**/*.scss');
 const SCRIPTS_FILES = path.join(SOURCE_DIR, '**/*.js');
 
 const cwd = process.cwd();
+const isProd = process.env.NODE_ENV === 'production';
 
 gulp.task('backend', (cb) => {
   exec('./bin/www', {
@@ -81,28 +83,39 @@ gulp.task('lint', () =>
 );
 
 // Browserify
-gulp.task('browserify', ['lint'], () =>
-  browserify({
+gulp.task('browserify', ['lint'], () => {
+  let browserifyPipe = browserify({
     debug: true,
     entries: [path.join(SOURCE_DIR, ENTRY_POINT)],
     extensions: ['.js'],
   })
-    .transform(html)
-    .transform(babelify)
-    .bundle()
-    .pipe(source(ENTRY_POINT))
-    .pipe(plumber({
-      errorHandler(error) {
-        console.log(error.message);
-        this.emit('end');
-      },
-    }))
-    .pipe(gulp.dest(OUTPUT_DIR))
+  .transform(html)
+  .transform(babelify)
+  .transform(ngannotate)
+  .bundle()
+  .on('error', function (error) {
+    console.log(error.message);
+    this.emit('end');
+  })
+  .pipe(source(ENTRY_POINT))
+  .pipe(plumber({
+    errorHandler(error) {
+      console.log(error.message);
+      this.emit('end');
+    },
+  }))
+  .pipe(gulp.dest(OUTPUT_DIR));
+
+  if (isProd) {
+    browserifyPipe = browserifyPipe
     .pipe(rename({ suffix: '.min' }))
     .pipe(streamify(uglify()))
-    .pipe(gulp.dest(OUTPUT_DIR))
-    .pipe(browserSync.reload({ stream: true }))
-);
+    .pipe(gulp.dest(OUTPUT_DIR));
+  }
+
+  return browserifyPipe
+  .pipe(browserSync.reload({ stream: true }));
+});
 
 // Html
 gulp.task('html', () =>
@@ -121,5 +134,5 @@ gulp.task('build', ['styles', 'browserify', 'html']);
 gulp.task('dev', ['browser-sync'], () => {
   gulp.watch(STYLES_FILES, ['styles']);
   gulp.watch([SCRIPTS_FILES, HTML_FILES], ['browserify']);
-  gulp.watch('*.html', ['html']);
+  gulp.watch(HTML_FILES, ['html']);
 });

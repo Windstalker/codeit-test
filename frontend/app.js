@@ -1,3 +1,17 @@
 import angular from 'angular';
+import ngResource from 'angular-resource';
+import uiRouter from 'angular-ui-router';
+import services from './services';
+import controllers from './controllers';
 
-export default angular.module('app', {});
+import onRun from './run';
+import onConfig from './config';
+
+export default angular.module('app', [
+  uiRouter,
+  ngResource,
+  services.name,
+  controllers.name,
+])
+.run(onRun)
+.config(onConfig);
