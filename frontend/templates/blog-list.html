@@ -1,0 +1,4 @@
+<div class="blog-list">
+  <button ng-click="toggleOrder()">Sort by {{reverse ? 'oldest' : 'latest'}}</button>
+  <blog-post ng-repeat="post in posts track by post.id" post="post" open-link="true">
+</div>

@@ -72,7 +72,8 @@ gulp.task('styles', () => {
     .pipe(rename({ suffix: '.min' }))
     .pipe(minifycss())
     .pipe(gulp.dest(OUTPUT_DIR))
-    .pipe(browserSync.reload({ stream: true }));
+    // .pipe(browserSync.reload({ stream: true }))
+    .pipe(browserSync.stream());
 });
 
 // Eslint
@@ -114,14 +115,16 @@ gulp.task('browserify', ['lint'], () => {
   }
 
   return browserifyPipe
-  .pipe(browserSync.reload({ stream: true }));
+  // .pipe(browserSync.reload({ stream: true }))
+  .pipe(browserSync.stream());
 });
 
 // Html
 gulp.task('html', () =>
   gulp.src(HTML_FILES)
     .pipe(gulp.dest(OUTPUT_DIR))
-    .pipe(browserSync.reload({ stream: true }))
+    // .pipe(browserSync.reload({ stream: true }))
+    .pipe(browserSync.stream())
 );
 
 gulp.task('clean', () =>
