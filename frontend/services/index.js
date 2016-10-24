@@ -1,7 +1,9 @@
 import angular from 'angular';
-import ApiService from './apiservice';
+import AuthService from './auth-service';
+import BlogService from './blog-service';
 
 const appServices = angular.module('app.services', []);
-appServices.service('ApiService', ApiService);
+appServices.service('AuthService', AuthService);
+appServices.service('BlogService', BlogService);
 
 export default appServices;

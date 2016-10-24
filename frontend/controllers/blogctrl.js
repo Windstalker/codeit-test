@@ -1,4 +1,4 @@
-export default function BlogController($scope, ApiService, posts, orderByFilter) {
+export default function BlogController($scope, BlogService, posts, orderByFilter) {
   'ngInject';
 
   const sortByPostDate = (collection, reverse) =>

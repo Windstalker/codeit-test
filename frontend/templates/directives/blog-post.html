@@ -4,5 +4,6 @@
   <span class="blog-post-date">Posted at {{formatDate(post.created)}}</span>
   <div class="blog-post-actions">
     <a ui-sref="blog.post({postId: post.id})" ng-show="openLink">Open</a>
+    <a ng-click="handleRemove()">Remove</a>
   </div>
 </div>

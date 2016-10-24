@@ -28,10 +28,10 @@ export default function onConfig($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/blog-list.html',
       controller: 'BlogController',
       resolve: {
-        posts(ApiService) {
+        posts(BlogService) {
           'ngInject';
 
-          return ApiService.Blog.query().$promise;
+          return BlogService.query().$promise;
         },
       },
     })
@@ -41,11 +41,11 @@ export default function onConfig($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/blog-post-view.html',
       controller: 'BlogPostController',
       resolve: {
-        post(ApiService, $stateParams) {
+        post(BlogService, $stateParams) {
           'ngInject';
 
           const { postId } = $stateParams;
-          return ApiService.Blog.get({ postId }).$promise;
+          return BlogService.get({ postId }).$promise;
         },
       },
     })
